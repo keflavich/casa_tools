@@ -106,4 +106,5 @@ def main():
 
     args = parser.parse_args()
 
-    replace_freqheader_with_veloheader(args.filename, rest_frequency=args.rest_frequency*u.Hz)
+    rf = args.rest_frequency*u.Hz if args.rest_frequency is not None else None
+    replace_freqheader_with_veloheader(args.filename, rest_frequency=rf)
