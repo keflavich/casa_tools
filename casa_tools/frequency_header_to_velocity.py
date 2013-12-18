@@ -63,8 +63,8 @@ def get_velo_header(filename, **kwargs):
     f0 = get_reference_frequency(filename)
     unit = u.Unit(h['CUNIT3'])
 
-    
-    cdelt = (h['CDELT3']*unit / f0)*constants.c
+    # dv = -df/f * c
+    cdelt = -(h['CDELT3']*unit / f0)*constants.c
 
     refframes = {1:'LSR',2:'HEL',3:'OBS'}
     refframe = refframes[h['VELREF'] % 256]
