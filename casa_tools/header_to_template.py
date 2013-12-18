@@ -5,14 +5,20 @@ from astropy.io import fits
 from warnings import warn
 import numpy as np
 import tempfile
+# requires CASA!
 from taskinit import iatool
 
 def header_to_template(header):
     """
     Convert a FITS Header object into a CASA template dictionary
+
+    The FITS header should be a FITS Header instance.  If you have a FITS file,
+    use `fits_to_template` instead
     """
 
-    if not isinstance(header,fits.Header):
+    if isinstance(header,str):
+        header = fits.Header.fromtextfile(header)
+    elif not isinstance(header,fits.Header):
         warn("Header is not a FITS header instance.  There may be crashes due to inconsistency as a result.")
 
     tf = tempfile.NamedTemporaryFile()
@@ -24,10 +30,21 @@ def header_to_template(header):
     hdu = fits.PrimaryHDU(header=header,data=np.empty(shape,dtype='float'))
     hdu.writeto(tf.name)
 
-    td = tempfile.mkdtemp()
+    return fits_to_template(tf.name)
+
+
+def fits_to_template(fitsfilename):
+    """
+    Extract a CASA "template" header from a FITS file
+    """
+    
+    if not isinstance(fitsfilename,str):
+        raise ValueError("FITS file name must be a filename string")
 
     ia = iatool()
-    ia.fromfits(infile=tf.name, outfile=td, overwrite=True)
+    ia.fromfits(infile=fitsfilename, outfile=td, overwrite=True)
+
+    td = tempfile.mkdtemp()
 
     ia.open(td)
     csys = ia.coordsys()
@@ -39,4 +56,3 @@ def header_to_template(header):
                  'shap':shape}
 
     return outheader
-
