@@ -29,9 +29,14 @@ def header_to_template(header):
     ia = iatool()
     ia.fromfits(infile=tf.name, outfile=td, overwrite=True)
 
-    outheader = ia.regrid(td, 'get')
+    ia.open(td)
+    csys = ia.coordsys()
+    shape = ia.shape()
 
     ia.close()
+
+    outheader = {'csys':csys.torecord(),
+                 'shap':shape}
 
     return outheader
 
