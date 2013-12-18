@@ -1,1 +1,2 @@
 import frequency_header_to_velocity
+from header_to_template import header_to_template,fits_to_template
